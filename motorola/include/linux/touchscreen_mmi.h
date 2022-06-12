@@ -301,8 +301,12 @@ struct ts_mmi_class_methods {
 enum ts_mmi_pm_mode {
 	TS_MMI_PM_DEEPSLEEP = 0,
 	TS_MMI_PM_GESTURE,
-	TS_MMI_PM_ACTIVE
-	};
+	TS_MMI_PM_ACTIVE,
+	TS_MMI_PM_GESTURE_SINGLE,
+	TS_MMI_PM_GESTURE_DOUBLE,
+	TS_MMI_PM_GESTURE_ZERO,
+	TS_MMI_PM_GESTURE_SWITCH,
+};
 
 enum ts_mmi_gesture_bit {
 	TS_MMI_GESTURE_ZERO = BIT(0),
