@@ -7200,6 +7200,10 @@ int dsi_display_dev_probe(struct platform_device *pdev)
 			goto end;
 	}
 
+	if (index == DSI_PRIMARY) {
+		sde_sysfs_mot_kms_prop_util_init(display);
+	}
+
 	return 0;
 end:
 	if (display)
@@ -7238,6 +7242,10 @@ int dsi_display_dev_remove(struct platform_device *pdev)
 				continue;
 			ctrl->ctrl->post_cmd_tx_workq = NULL;
 		}
+	}
+
+	if (!strcmp(display->display_type, "primary")) {
+		sde_sysfs_mot_kms_prop_util_deinit(display);
 	}
 
 	(void)_dsi_display_dev_deinit(display);
