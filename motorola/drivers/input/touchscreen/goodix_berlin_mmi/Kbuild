@@ -160,7 +160,6 @@ else ifneq ($(findstring leap, $(USE_TARGET_PRODUCT)), )
 else ifneq ($(findstring mona, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_MONA
 endif
-$(warning "william EXTRA_CFLAGS = $(EXTRA_CFLAGS)")
 
 KBUILD_EXTRA_SYMBOLS += $(CURDIR)/$(KBUILD_EXTMOD)/../touchscreen_mmi/$(GKI_OBJ_MODULE_DIR)/Module.symvers
 KBUILD_EXTRA_SYMBOLS += $(CURDIR)/$(KBUILD_EXTMOD)/../../../mmi_info/$(GKI_OBJ_MODULE_DIR)/Module.symvers
