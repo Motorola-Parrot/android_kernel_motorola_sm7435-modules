@@ -161,8 +161,8 @@ else ifneq ($(findstring mona, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_MONA
 endif
 
-KBUILD_EXTRA_SYMBOLS += $(CURDIR)/$(KBUILD_EXTMOD)/../touchscreen_mmi/$(GKI_OBJ_MODULE_DIR)/Module.symvers
-KBUILD_EXTRA_SYMBOLS += $(CURDIR)/$(KBUILD_EXTMOD)/../../../mmi_info/$(GKI_OBJ_MODULE_DIR)/Module.symvers
+KBUILD_EXTRA_SYMBOLS += $(CURDIR)/$(KBUILD_EXTMOD)/../touchscreen_mmi/Module.symvers
+KBUILD_EXTRA_SYMBOLS += $(CURDIR)/$(KBUILD_EXTMOD)/../../../mmi_info/Module.symvers
 ifneq ($(filter m y, $(CONFIG_INPUT_GTP_PASSIVE_PEN_NOTIFIER)),)
 KBUILD_EXTRA_SYMBOLS += $(CURDIR)/$(KBUILD_EXTMOD)/../../../misc/hall/$(GKI_OBJ_MODULE_DIR)/Module.symvers
 endif
