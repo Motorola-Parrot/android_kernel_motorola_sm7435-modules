@@ -15,23 +15,23 @@ EXTRA_CFLAGS += -I$(TOP)/kernel/techpack/audio/include/uapi
 endif
 
 
-ifneq (,$(filter channel%, $(TARGET_PRODUCT)))
+ifneq (,$(findstring channel, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_TAS2560_REGMAP -DCONFIG_TAS2560_CODEC -DCONFIG_TAS2560_MISC -DCONFIG_SND_SOC_TAS2560
 endif
 
-ifneq (,$(filter sofiar%, $(TARGET_PRODUCT)))
+ifneq (,$(findstring sofiar, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_TAS2562_REGMAP -DCONFIG_TAS2562_CODEC -DCONFIG_SND_SOC_TAS2562 -DTAS2558_CODEC -DCONFIG_TAS25XX_ALGO -DCONFIG_TAS25XX_ALGO_STEREO -DCONFIG_TAS25XX_CALIB
 endif
 
-ifneq (,$(filter rav%, $(TARGET_PRODUCT)))
+ifneq (,$(findstring rav, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_TAS2562_REGMAP -DCONFIG_TAS2562_CODEC -DCONFIG_SND_SOC_TAS2562 -DTAS2558_CODEC -DCONFIG_TAS25XX_ALGO -DCONFIG_TAS25XX_CALIB
 endif
 
-ifneq (,$(filter astro%, $(TARGET_PRODUCT)))
+ifneq (,$(findstring astro, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_AW882XX_CODEC -DCONFIG_AW882XX_DSP
 endif
 
-ifneq (,$(filter surf% ocean%, $(TARGET_PRODUCT)))
+ifneq (,$(or $(findstring surf,$(TARGET_PRODUCT)),$(findstring ocean,$(TARGET_PRODUCT))))
 ifeq ($(KDIR),)
 PLMA_HOSTSW_DIR=$(realpath -f $(srctree)/$(src))
 else

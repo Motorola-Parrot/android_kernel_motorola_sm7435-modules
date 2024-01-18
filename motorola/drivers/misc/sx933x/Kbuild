@@ -11,46 +11,46 @@ ifneq ($(filter m y,$(CONFIG_SX933X_FLIP_CAL)),)
 	EXTRA_CFLAGS += -DCONFIG_CAPSENSE_FLIP_CAL
 endif
 
-ifneq (,$(filter river%,$(TARGET_PRODUCT)))
+ifneq (,$(findstring river, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL
 endif
 
-ifneq (,$(filter doha%,$(TARGET_PRODUCT)))
+ifneq (,$(findstring doha, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL
 endif
 
-ifneq (,$(filter sofia%,$(TARGET_PRODUCT)))
+ifneq (,$(findstring sofia, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL
 endif
 
-ifneq (,$(filter odin%,$(TARGET_PRODUCT)))
+ifneq (,$(findstring odin, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL \
 		-DCONFIG_CAPSENSE_ATTACH_CAL
 endif
 
-ifneq (,$(filter olson%,$(TARGET_PRODUCT)))
+ifneq (,$(findstring olson, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL \
 		-DCONFIG_CAPSENSE_FLIP_CAL
 endif
 
-ifneq (,$(filter rav%,$(TARGET_PRODUCT)))
+ifneq (,$(findstring rav, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL
 endif
 
-ifneq (,$(filter burton%,$(TARGET_PRODUCT)))
+ifneq (,$(findstring burton, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL
 endif
 
-ifneq (,$(filter smith% nairo%,$(TARGET_PRODUCT)))
+ifneq (,$(or $(findstring smith,$(TARGET_PRODUCT)),$(findstring nairo,$(TARGET_PRODUCT))))
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL
 endif
 
-ifneq (,$(filter racer%,$(TARGET_PRODUCT)))
+ifneq (,$(findstring racer, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_HEADSET_STATE
 endif
 
-ifneq (,$(filter kiev%,$(TARGET_PRODUCT)))
+ifneq (,$(findstring kiev, $(TARGET_PRODUCT)))
 EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL
 endif
 

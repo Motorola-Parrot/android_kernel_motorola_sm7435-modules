@@ -10,7 +10,7 @@ ifneq ($(filter m y,$(CONFIG_GOODIX_DRM_PANEL_NOTIFICATIONS)),)
     EXTRA_CFLAGS += -DCONFIG_GOODIX_DRM_PANEL_NOTIFICATIONS
 endif
 
-ifneq ($(filter banks%, $(TARGET_PRODUCT)),)
+ifneq (,$(findstring banks,$(TARGET_PRODUCT)))
 	EXTRA_CFLAGS += -DSOFTDEP_GPIO_PCAL6408
 endif
 

@@ -3,7 +3,7 @@
 EXTRA_CFLAGS += -I$(KERNEL_SRC)/../sm7435-modules/motorola/include \
 		-I$(KERNEL_SRC)/../sm7435-modules/motorola/drivers/input/touchscreen/sec_mmi
 
-ifneq (,$(filter racer% burton%,$(TARGET_PRODUCT)))
+ifneq (,$(or $(findstring racer,$(TARGET_PRODUCT)),$(findstring burton,$(TARGET_PRODUCT))))
     EXTRA_CFLAGS += -DCONFIG_DRM_DYNAMIC_REFRESH_RATE
 endif
 

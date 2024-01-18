@@ -2,11 +2,7 @@
 EXTRA_CFLAGS += -Wall
 EXTRA_CFLAGS += -I$(KERNEL_SRC)/../sm7435-modules/motorola/include
 
-prod_list := devon leap
-find_target := $(foreach find, $(prod_list), $(findstring $(find), $(TARGET_PRODUCT)))
-find_target := $(strip $(find_target))
-$(warning find_target=$(find_target))
-ifneq ($(find_target),)
+ifneq (,$(or $(findstring devon,$(TARGET_PRODUCT)),$(findstring leap,$(TARGET_PRODUCT))))
 $(warning define SUPPORT_PIN_CTRL)
 EXTRA_CFLAGS += -DSUPPORT_PIN_CTRL
 endif

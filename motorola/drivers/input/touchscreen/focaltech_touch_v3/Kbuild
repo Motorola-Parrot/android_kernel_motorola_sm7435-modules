@@ -86,9 +86,9 @@ else
 USE_TARGET_PRODUCT := $(TARGET_PRODUCT)
 endif
 
-ifneq ($(filter bangkk%, $(USE_TARGET_PRODUCT)), )
+ifneq ($(findstring bangkk, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_BANGKK
-else ifneq ($(filter avatrn%, $(USE_TARGET_PRODUCT)), )
+else ifneq ($(findstring avatrn, $(USE_TARGET_PRODUCT)), )
         EXTRA_CFLAGS += -DPRODUCT_AVATRN
 endif
 

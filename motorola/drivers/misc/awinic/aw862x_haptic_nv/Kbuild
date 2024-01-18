@@ -3,7 +3,7 @@ EXTRA_CFLAGS += -Wall
 EXTRA_CFLAGS += -I$(KERNEL_SRC)/../sm7435-modules/motorola/include \
 		-I$(KERNEL_SRC)/../sm7435-modules/motorola/drivers/misc/awinic/aw862x_haptic_nv
 
-ifneq (,$(filter kobe%, $(TARGET_PRODUCT)))
+ifneq (,$(findstring kobe, $(TARGET_PRODUCT)))
        EXTRA_CFLAGS += -DFCNT_VIBRATION
        EXTRA_CFLAGS += -DAW_UEFI_F0_CALIBRATION
 endif

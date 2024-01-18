@@ -14,7 +14,7 @@ ifneq ($(filter m y,$(CONFIG_STK501xx_FLIP_CAL)),)
     EXTRA_CFLAGS += -DCONFIG_CAPSENSE_FLIP_CAL
 endif
 
-ifneq (,$(filter river%,$(TARGET_PRODUCT)))
+ifneq (,$(findstring river, $(TARGET_PRODUCT)))
     EXTRA_CFLAGS += -DCONFIG_CAPSENSE_USB_CAL
 endif
 
