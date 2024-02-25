@@ -581,7 +581,7 @@ ssize_t hybridswap_report_show(struct device *dev,
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 1, 0)
 static inline ssize_t meminfo_show(struct hybstatus *stat, char *buf, ssize_t len)
 #else
-static inline meminfo_show(struct hybstatus *stat, char *buf, ssize_t len)
+static inline ssize_t meminfo_show(struct hybstatus *stat, char *buf, ssize_t len)
 #endif
 {
 	unsigned long eswap_total_pages = 0, eswap_compressed_pages = 0;
