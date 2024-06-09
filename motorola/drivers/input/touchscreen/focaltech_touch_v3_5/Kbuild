@@ -1,8 +1,8 @@
 # add -Wall to try to catch everything we can.
 EXTRA_CFLAGS += -Wall
-EXTRA_CFLAGS += -I$(ANDROID_BUILD_TOP)/motorola/kernel/modules/include \
-		-I$(ANDROID_BUILD_TOP)/motorola/kernel/modules/drivers/input/touchscreen/focaltech_touch_v3_5 \
-		-I$(ANDROID_BUILD_TOP)/motorola/kernel/modules/drivers/input/touchscreen/focaltech_touch_v3_5/include
+EXTRA_CFLAGS += -I$(KERNEL_SRC)/../sm7435-modules/motorola/include \
+		-I$(KERNEL_SRC)/../sm7435-modules/motorola/drivers/input/touchscreen/focaltech_touch_v3_5 \
+		-I$(KERNEL_SRC)/../sm7435-modules/motorola/drivers/input/touchscreen/focaltech_touch_v3_5/include
 
 obj-m := focaltech_v3_5.o
 focaltech_v3_5-objs += focaltech_core.o
