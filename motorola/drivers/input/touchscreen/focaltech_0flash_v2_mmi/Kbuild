@@ -73,4 +73,4 @@ ifneq ($(filter m y, $(CONFIG_FTS_SPI_CS_DELAY)),)
 endif
 
 
-KBUILD_EXTRA_SYMBOLS += $(CURDIR)/../../kernel/msm-$(MODULE_KERNEL_VERSION)/Module.symvers
+KBUILD_EXTRA_SYMBOLS += $(OUT_DIR)/Module.symvers
