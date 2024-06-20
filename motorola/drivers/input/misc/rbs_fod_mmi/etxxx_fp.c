@@ -1096,7 +1096,6 @@ static int egisfp_fb_callback(struct notifier_block *nb, unsigned long val, void
 {
 	struct egisfp_dev_t *egis_dev = NULL;
 	char *envp[2];
-	//int ret = 0;
 #if defined(CONFIG_PANEL_NOTIFICATIONS)
 	INFO_PRINT(" %s : got notify value = %d \n", __func__, (int)val);
 	egis_dev = container_of(nb, struct egisfp_dev_t, notifier);
