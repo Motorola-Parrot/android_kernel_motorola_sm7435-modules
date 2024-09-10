@@ -120,6 +120,7 @@ typedef struct {
 
 /* Some cases, we have to get radio by sku(AKA model number) */
 static moto_sku_radio_map_t moto_sku_radio_map_list[] = {
+    {"XT2437-2",    "EMEA"},
     {"XT2437-3",    "EMEA"},
     {NULL,          NULL},
 };
