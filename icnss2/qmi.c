@@ -114,6 +114,7 @@ typedef struct moto_product {
 
 static moto_product products_list[] = {
 	{"mona",      "all",  NV_EPA},
+	{"monai",      "all",  NV_EPA},
 	/* Terminator */
 	{{0}, {0}, {0}},
 };
@@ -212,7 +213,7 @@ static int selectFileNameByProduct(struct icnss_priv *plat_priv, char *filename,
 
 	num = num_of_products(products_list);
 	for (i = 0; i < num; i++) {
-		if (strcmp(device_ptr, (products_list+i)->hw_device) == 0) {
+		if (strncmp(device_ptr, (products_list+i)->hw_device, strlen(device_ptr)) == 0) {
 			if(strcmp(radio_ptr, (products_list+i)->hw_radio) == 0 || strcmp((products_list+i)->hw_radio, "all") == 0) {
 				if(ICNSS_BDF_ELF == bdf_type) {
 					if(0x400c1211 == plat_priv->soc_id)  //GF chip
