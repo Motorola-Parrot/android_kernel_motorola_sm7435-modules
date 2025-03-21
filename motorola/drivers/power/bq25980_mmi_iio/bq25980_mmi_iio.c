@@ -2060,7 +2060,6 @@ static DEVICE_ATTR(reg_addr, 0664, show_reg_addr, store_reg_addr);
 
 static ssize_t show_reg_data(struct device *dev, struct device_attribute *attr, char *buf)
 {
-	int ret;
 	ssize_t size = 0;
 	struct bq25980_device *bq = dev_get_drvdata(dev);
 	if (!bq) {
@@ -2069,7 +2068,7 @@ static ssize_t show_reg_data(struct device *dev, struct device_attribute *attr, 
 	}
 	if( ( bq->reg_addr >= 0 ) && (bq->reg_addr <= 0x37) )
 	{
-		ret = regmap_read(bq->regmap, bq->reg_addr, &bq->reg_data);
+		regmap_read(bq->regmap, bq->reg_addr, &bq->reg_data);
 		size = sprintf(buf, "reg[%02X]=0x%02X\n", bq->reg_addr, bq->reg_data);
 	}else
 	{
