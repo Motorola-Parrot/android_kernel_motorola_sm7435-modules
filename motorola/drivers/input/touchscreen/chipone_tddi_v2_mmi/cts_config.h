@@ -112,6 +112,25 @@
 
 #define CFG_CTS_NUM_GESTURE                 (14u)
 #define CFG_CTS_GESTURE_REPORT_KEY
+#ifdef CONFIG_BOARD_USES_DOUBLE_TAP_CTRL
+#define CFG_CTS_GESTURE_KEYMAP          \
+{                                       \
+    { GESTURE_C, KEY_C,},               \
+    { GESTURE_W, KEY_W,},               \
+    { GESTURE_V, KEY_V,},               \
+    { GESTURE_D_TAP, KEY_WAKEUP,},      \
+    { GESTURE_Z, KEY_Z,},               \
+    { GESTURE_M, KEY_M,},               \
+    { GESTURE_O, KEY_O,},               \
+    { GESTURE_E, KEY_E,},               \
+    { GESTURE_S, KEY_S,},               \
+    { GESTURE_UP, KEY_UP,},             \
+    { GESTURE_DOWN, KEY_DOWN,},         \
+    { GESTURE_LEFT, KEY_LEFT,},         \
+    { GESTURE_RIGHT, KEY_RIGHT,},       \
+    { GESTURE_TAP, BTN_TRIGGER_HAPPY3,},            \
+}
+#else
 #define CFG_CTS_GESTURE_KEYMAP          \
 {                                       \
     { GESTURE_C, KEY_C,},               \
@@ -129,6 +148,7 @@
     { GESTURE_RIGHT, KEY_RIGHT,},       \
     { GESTURE_TAP, BTN_TRIGGER_HAPPY3,},            \
 }
+#endif
 #define CFG_CTS_GESTURE_REPORT_TRACE         0
 #endif /* CFG_CTS_GESTURE */
 

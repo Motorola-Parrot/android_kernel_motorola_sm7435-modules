@@ -48,7 +48,7 @@ MODULE_PARM_DESC(debug_log, "Show debug log control");
 
 struct chipone_ts_data *g_cts_data;
 
-#ifdef CHIPONE_SENSOR_EN
+#if defined(CHIPONE_SENSOR_EN) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
 extern int __attribute__ ((weak)) sensors_classdev_register(struct device *parent, struct sensors_classdev *sensors_cdev);
 extern void __attribute__ ((weak)) sensors_classdev_unregister(struct sensors_classdev *sensors_cdev);
 #endif
@@ -498,8 +498,7 @@ static int cts_get_panel(void)
 }
 #endif
 
-
-#ifdef CHIPONE_SENSOR_EN
+#if defined(CHIPONE_SENSOR_EN) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
 static struct sensors_classdev __maybe_unused sensors_touch_cdev = {
 
         .name = "dt-gesture",
@@ -558,9 +557,6 @@ static int chipone_sensor_init(struct chipone_ts_data *data)
 
         __set_bit(EV_KEY, sensor_input_dev->evbit);
         __set_bit(BTN_TRIGGER_HAPPY3, sensor_input_dev->keybit);
-#ifdef CONFIG_BOARD_USES_DOUBLE_TAP_CTRL
-        __set_bit(BTN_TRIGGER_HAPPY6, sensor_input_dev->keybit);
-#endif
         __set_bit(EV_SYN, sensor_input_dev->evbit);
 
         sensor_input_dev->name = "double-tap";
@@ -652,7 +648,7 @@ static int cts_driver_probe(struct spi_device *client)
     struct chipone_ts_data *cts_data = NULL;
     int ret = 0;
 
-#ifdef CHIPONE_SENSOR_EN
+#if defined(CHIPONE_SENSOR_EN) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
         static bool initialized_sensor;
 #endif
 
@@ -864,7 +860,7 @@ static int cts_driver_probe(struct spi_device *client)
 
     INIT_WORK(&cts_data->ts_resume_work, cts_resume_work_func);
 
-#ifdef CHIPONE_SENSOR_EN
+#if defined(CHIPONE_SENSOR_EN) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
         if (!initialized_sensor) {
 #ifdef CONFIG_HAS_WAKELOCK
                 wake_lock_init(&(cts_data->gesture_wakelock), WAKE_LOCK_SUSPEND, "dt-wake-lock");
