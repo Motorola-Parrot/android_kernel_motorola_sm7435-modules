@@ -2104,7 +2104,7 @@ void ili_report_gesture_mode(u8 *buf, int len)
 {
 	int lu_x = 0, lu_y = 0, rd_x = 0, rd_y = 0, score = 0;
 	struct gesture_coordinate *gc = ilits->gcoord;
-#ifdef ILI_SENSOR_EN
+#if defined(ILI_SENSOR_EN) && !defined(ILI_DOUBLE_TAP_CTRL)
 	static int report_cnt = 0;
 #else
 	struct input_dev *input = ilits->input;
@@ -2163,13 +2163,21 @@ void ili_report_gesture_mode(u8 *buf, int len)
 			ILI_INFO("Gesture got but wakeable not set. Skip this gesture.");
 			return;
 		}
+#ifdef ILI_DOUBLE_TAP_CTRL
 		if (ilits->report_gesture_key) {
 			int key_code = BTN_TRIGGER_HAPPY3;
-#ifdef ILI_DOUBLE_TAP_CTRL
 			if (GESTURE_DOUBLECLICK == gc->code) {
-				key_code = BTN_TRIGGER_HAPPY6;
+				key_code = KEY_WAKEUP;
 			}
-#endif
+			input_report_key(input, key_code, 1);
+			input_sync(input);
+			input_report_key(input, key_code, 0);
+			input_sync(input);
+			ILI_INFO("input report keycode %d", key_code);
+		}
+#else
+		if (ilits->report_gesture_key) {
+			int key_code = BTN_TRIGGER_HAPPY3;
 			input_report_key(ilits->sensor_pdata->input_sensor_dev, key_code, 1);
 			input_sync(ilits->sensor_pdata->input_sensor_dev);
 			input_report_key(ilits->sensor_pdata->input_sensor_dev, key_code, 0);
@@ -2189,6 +2197,7 @@ void ili_report_gesture_mode(u8 *buf, int len)
 		wake_lock_timeout(&(ilits->gesture_wakelock), msecs_to_jiffies(5000));
 #else
 		PM_WAKEUP_EVENT(ilits->gesture_wakelock, 5000);
+#endif
 #endif
 #else
 		input_report_key(input, KEY_GESTURE_POWER, 1);
