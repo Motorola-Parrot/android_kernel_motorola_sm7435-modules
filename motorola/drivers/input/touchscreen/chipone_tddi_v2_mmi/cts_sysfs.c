@@ -3128,7 +3128,7 @@ static ssize_t gesture_show(struct device *dev,
                 struct device_attribute *attr, char *buf)
 {
         struct chipone_ts_data *cts_data = dev_get_drvdata(dev);
-        return scnprintf(buf, PAGE_SIZE, "%02x\n", cts_data->pdata->supported_gesture_type);
+        return scnprintf(buf, PAGE_SIZE, "%u\n", cts_data->d_tap_flag);
 }
 
 static ssize_t gesture_store(struct device *dev,
@@ -3147,29 +3147,14 @@ static ssize_t gesture_store(struct device *dev,
         }
 
         switch (value) {
-                case 0x10:
-                        cts_info("[%s %d]:  zero tap disable", __func__, __LINE__);
-                        break;
-                case 0x11:
-                        break;
-                case 0x20:
-                        cts_info("[%s %d]:  single tap disable", __func__, __LINE__);
+                case 1:
                         cts_data->s_tap_flag = 0;
-                        break;
-                case 0x21:
-                        cts_info("[%s %d]:  single tap enable", __func__, __LINE__);
-                        cts_data->s_tap_flag = 1;
-                        break;
-                case 0x30:
-                        cts_info("[%s %d]:  double tap disable", __func__, __LINE__);
-                        cts_data->d_tap_flag = 0;
-                        break;
-                case 0x31:
-                        cts_info("[%s %d]:  double tap enable", __func__, __LINE__);
                         cts_data->d_tap_flag = 1;
                         break;
                 default:
-                        cts_info("[%s %d]: unsupport gesture mode type", __func__, __LINE__);
+                        cts_data->s_tap_flag = 0;
+                        cts_data->d_tap_flag = 0;
+                        break;
         }
         cts_unlock_device(&cts_data->cts_dev);
 

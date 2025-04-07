@@ -652,10 +652,6 @@ static int cts_plat_parse_dt(struct cts_platform_data *pdata,
         cts_info("panel supplier=%s", (char *)pdata->panel_supplier);
 #endif
 
-#ifdef CONFIG_BOARD_USES_DOUBLE_TAP_CTRL
-        if (!of_property_read_u32(dev_node, "chipone,supported_gesture_type", &pdata->supported_gesture_type))
-                cts_info("chipone,supported_gesture_type=%02x\n", pdata->supported_gesture_type);
-#endif
     return 0;
 }
 #endif /* CONFIG_CTS_OF */
