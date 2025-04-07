@@ -1398,7 +1398,6 @@ struct ilitek_ts_data {
 	bool gesture_enabled;
 	uint32_t report_gesture_key;
 #ifdef ILI_DOUBLE_TAP_CTRL
-	uint8_t supported_gesture_type;
 	uint8_t sys_gesture_type;
 	uint8_t rst_pull_flag;
 #else

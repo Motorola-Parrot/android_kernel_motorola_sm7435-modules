@@ -631,15 +631,6 @@ static int parse_dt(struct device_node *np)
 	int32_t ret = 0;
 
 #ifdef ILI_DOUBLE_TAP_CTRL
-	uint32_t value;
-
-	if (!of_property_read_u32(np, "ilitek,supported_gesture_type", &value)) {
-		ilits->supported_gesture_type = (uint8_t)value;
-		ILI_INFO("supported_gesture_type=%d\n", ilits->supported_gesture_type);
-	}
-	else
-		ILI_INFO("warn: supported_gesture_type not set\n");
-
 	if (of_property_read_bool(np, "ilitek,rst-pull-flag")) {
 		ILI_INFO("ilitek,rst pull flag set");
 		ilits->rst_pull_flag = 1;
