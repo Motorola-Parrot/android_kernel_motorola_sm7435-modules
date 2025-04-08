@@ -1417,14 +1417,6 @@ static int32_t nvt_parse_dt(struct device *dev)
 
 #endif
 
-
-#ifdef CONFIG_BOARD_USES_DOUBLE_TAP_CTRL
-        uint32_t value;
-        if (!of_property_read_u32(np, "novatek,supported_gesture_type", &value)){
-        ts->supported_gesture_type = (uint8_t)value;
-                }
-#endif
-
 #if NVT_TOUCH_SUPPORT_HW_RST
 	ts->reset_gpio = of_get_named_gpio_flags(np, "novatek,reset-gpio", 0, &ts->reset_flags);
 	NVT_LOG("novatek,reset-gpio=%d\n", ts->reset_gpio);
@@ -2714,18 +2706,15 @@ static void nvt_gesture_state_switch(void)
 static ssize_t gesture_show(struct device *dev,
                 struct device_attribute *attr, char *buf)
 {
-        struct nvt_ts_data *nvt_data = dev_get_drvdata(dev);
-        return scnprintf(buf, PAGE_SIZE, "%02x\n", nvt_data->supported_gesture_type);
+        return scnprintf(buf, PAGE_SIZE, "%u\n", ts->d_tap_flag);
 }
 
 static ssize_t gesture_store(struct device *dev,
                                              struct device_attribute *attr,
                                              const char *buf, size_t count)
 {
-
 	unsigned int value = 0;
         int err = 0;
-        //struct nvt_ts_data *nvt_data = dev_get_drvdata(dev);
 
         err = sscanf(buf, "%d", &value);
         if (err < 0) {
@@ -2734,41 +2723,22 @@ static ssize_t gesture_store(struct device *dev,
         }
 
         switch (value) {
-                case 0x10:
-                        nvt_cmd_ext_store(0x7B,0x01);
-                        NVT_LOG("zero tap disable...");
-                        ts->s_tap_flag = false;
-                        ts->d_tap_flag = false;
-                        break;
-		case 0x11:
-			break;
-		case 0x20:
-			NVT_LOG("single tap disable...");
-			ts->s_tap_flag = false;
-			break;
-                case 0x21:
-			nvt_cmd_ext_store(0x7B,0x02);
-			NVT_LOG("single tap enable...");
-			ts->s_tap_flag = true;
-			break;
-		case 0x30:
-			NVT_LOG("double tap disable...");
-			ts->d_tap_flag = false;
-			break;
-		case 0x31:
+                case 1:
                         nvt_cmd_ext_store(0x7B,0x04);
-                        NVT_LOG("double tap enable...");
+                        ts->s_tap_flag = false;
                         ts->d_tap_flag = true;
                         break;
                 default:
-                        NVT_LOG("unsupport gesture mode type");
+                        nvt_cmd_ext_store(0x7B,0x01);
+                        ts->s_tap_flag = false;
+                        ts->d_tap_flag = false;
+                        break;
         }
 #ifdef NVT_WAKEUP_GESTURE_CTRL
 	nvt_gesture_state_switch();
 #endif
 
         return count;
-
 }
 
 #endif
