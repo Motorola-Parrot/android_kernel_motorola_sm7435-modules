@@ -3413,7 +3413,7 @@ static int mmi_get_ffc_fv(struct smb_mmi_charger *chip, int zone, bool force_ffc
 			}
 		}
 		ffc_max_fv = chip->noffc_max_fv;
-		mmi_info(chip,"NONEFFC temp zone %d, fv %d mV, chg iterm %d mA, qg iterm %d mA\n",
+		mmi_dbg(chip,"NONEFFC temp zone %d, fv %d mV, chg iterm %d mA, qg iterm %d mA\n",
 			zone, ffc_max_fv, prm->chrg_iterm, chip->noffc_qg_iterm);
 		return ffc_max_fv;
 	}
@@ -3425,7 +3425,7 @@ static int mmi_get_ffc_fv(struct smb_mmi_charger *chip, int zone, bool force_ffc
 
        prm->chrg_iterm = prm->ffc_zones[zone].ffc_chg_iterm;
        ffc_max_fv = prm->ffc_zones[zone].ffc_max_mv;
-       mmi_info(chip,
+       mmi_dbg(chip,
                "FFC temp zone %d, fv %d mV, chg iterm %d mA, qg iterm %d mA\n",
                  zone, ffc_max_fv, prm->chrg_iterm, prm->ffc_zones[zone].ffc_qg_iterm);
 
@@ -3628,7 +3628,7 @@ static void mmi_basic_charge_sm(struct smb_mmi_charger *chip,
 	bool is_chg_dis = get_effective_result(chip->chg_dis_votable);
 	static int demo_full_soc = 100;
 
-	mmi_info(chip, "batt_mv = %d, batt_ma %d, batt_soc %d,"
+	mmi_dbg(chip, "batt_mv = %d, batt_ma %d, batt_soc %d,"
 		" batt_temp %d, usb_mv %d, dc_mv %d, cp %d, vp %d dp %d\n",
 		stat->batt_mv,
 		stat->batt_ma,
@@ -3653,7 +3653,7 @@ static void mmi_basic_charge_sm(struct smb_mmi_charger *chip,
 	}
 
 	if (!chip->enable_dcp_ffc) {
-		mmi_info(chip,"real_charger_type=%d, pd_pps_active=%d\n",chip->real_charger_type,
+		mmi_dbg(chip,"real_charger_type=%d, pd_pps_active=%d\n",chip->real_charger_type,
 			chip->pd_pps_active);
 		if ((chip->real_charger_type != QTI_POWER_SUPPLY_TYPE_USB_HVDCP_3P5) &&
 			(chip->pd_pps_active != QTI_POWER_SUPPLY_PD_PPS_ACTIVE))
@@ -3863,11 +3863,11 @@ static void mmi_basic_charge_sm(struct smb_mmi_charger *chip,
 	} else
 		prm->batt_health = POWER_SUPPLY_HEALTH_GOOD;
 
-	mmi_info(chip, "Step State = %s, Temp Zone %d, Health %d\n",
+	mmi_dbg(chip, "Step State = %s, Temp Zone %d, Health %d\n",
 		stepchg_str[(int)prm->pres_chrg_step],
 		prm->pres_temp_zone,
 		prm->batt_health);
-	mmi_info(chip, "IMPOSED: FV = %d, CDIS = %d, FCC = %d, USBICL = %d\n",
+	mmi_dbg(chip, "IMPOSED: FV = %d, CDIS = %d, FCC = %d, USBICL = %d\n",
 		get_effective_result(chip->fv_votable),
 		get_effective_result(chip->chg_dis_votable),
 		get_effective_result(chip->fcc_votable),
