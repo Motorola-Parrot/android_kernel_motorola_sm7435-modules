@@ -909,7 +909,6 @@ static int ili_sensor_set_enable(struct sensors_classdev *sensors_cdev,
 	ILI_DBG("double tap ctrl, do nothing\n");
 #else
 	ILI_INFO("Gesture set enable %d!", enable);
-	mutex_lock(&ilits->state_mutex);
 	if (enable == 1) {
 		ilits->should_enable_gesture = true;
 	} else if (enable == 0) {
@@ -917,7 +916,6 @@ static int ili_sensor_set_enable(struct sensors_classdev *sensors_cdev,
 	} else {
 		ILI_INFO("unknown enable symbol\n");
 	}
-	mutex_unlock(&ilits->state_mutex);
 #endif
 	return 0;
 }
@@ -1256,7 +1254,6 @@ static int ilitek_plat_probe(void)
 #endif
 
 #ifdef ILI_SENSOR_EN
-	mutex_init(&ilits->state_mutex);
 	if (!initialized_sensor) {
 #ifdef CONFIG_HAS_WAKELOCK
 		wake_lock_init(&(ilits->gesture_wakelock), WAKE_LOCK_SUSPEND, "dt-wake-lock");
