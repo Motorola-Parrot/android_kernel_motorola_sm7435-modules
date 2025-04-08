@@ -82,7 +82,7 @@ enum touch_state {
 extern int nvt_mmi_init(struct nvt_ts_data *ts_data, bool enable);
 #endif
 
-#if defined (NVT_SENSOR_EN) || defined (CONFIG_INPUT_TOUCHSCREEN_MMI)
+#if (defined(NVT_SENSOR_EN) || defined(CONFIG_INPUT_TOUCHSCREEN_MMI)) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
 #ifdef CONFIG_HAS_WAKELOCK
 static struct wake_lock gesture_wakelock;
 #else
@@ -90,7 +90,7 @@ static struct wakeup_source *gesture_wakelock;
 #endif
 #endif
 
-#if defined (NVT_SENSOR_EN)
+#if defined(NVT_SENSOR_EN) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
 static struct sensors_classdev __maybe_unused sensors_touch_cdev = {
 
 	.name = "dt-gesture",
@@ -267,7 +267,7 @@ const uint16_t gesture_key_array[] = {
 	KEY_POWER,  //GESTURE_WORD_C
 	KEY_POWER,  //GESTURE_WORD_W
 	KEY_POWER,  //GESTURE_WORD_V
-	BTN_TRIGGER_HAPPY6,  //GESTURE_DOUBLE_CLICK
+	KEY_WAKEUP, //GESTURE_DOUBLE_CLICK
 	KEY_POWER,  //GESTURE_WORD_Z
 	KEY_POWER,  //GESTURE_WORD_M
 	KEY_POWER,  //GESTURE_WORD_O
@@ -1165,7 +1165,7 @@ void nvt_ts_wakeup_gesture_report(uint8_t gesture_id, uint8_t *data)
 	uint32_t keycode = 0;
 	uint8_t func_type = data[2];
 	uint8_t func_id = data[3];
-#ifdef NVT_SENSOR_EN
+#if defined(NVT_SENSOR_EN) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
 	static int report_cnt = 0;
 #endif
 
@@ -1273,23 +1273,24 @@ void nvt_ts_wakeup_gesture_report(uint8_t gesture_id, uint8_t *data)
 			if (!ret)
 				PM_WAKEUP_EVENT(gesture_wakelock, 5000);
 		}
-#elif NVT_SENSOR_EN
+#elif defined(NVT_SENSOR_EN)
 		if (!(ts->wakeable && ts->should_enable_gesture)) {
 			NVT_LOG("Gesture got but wakeable not set. Skip this gesture.");
 			return;
 		}
-                if (ts->report_gesture_key) {
 #ifdef CONFIG_BOARD_USES_DOUBLE_TAP_CTRL
-                        input_report_key(ts->sensor_pdata->input_sensor_dev, keycode, 1);
-                        input_sync(ts->sensor_pdata->input_sensor_dev);
-                        input_report_key(ts->sensor_pdata->input_sensor_dev, keycode, 0);
-                        input_sync(ts->sensor_pdata->input_sensor_dev);
+		if (ts->report_gesture_key) {
+			input_report_key(ts->input_dev, keycode, 1);
+			input_sync(ts->input_dev);
+			input_report_key(ts->input_dev, keycode, 0);
+			input_sync(ts->input_dev);
+		}
 #else
+                if (ts->report_gesture_key) {
 			input_report_key(ts->sensor_pdata->input_sensor_dev, KEY_F1, 1);
 			input_sync(ts->sensor_pdata->input_sensor_dev);
 			input_report_key(ts->sensor_pdata->input_sensor_dev, KEY_F1, 0);
 			input_sync(ts->sensor_pdata->input_sensor_dev);
-#endif
 			++report_cnt;
 		} else {
 			input_report_abs(ts->sensor_pdata->input_sensor_dev,
@@ -1305,6 +1306,7 @@ void nvt_ts_wakeup_gesture_report(uint8_t gesture_id, uint8_t *data)
 		wake_lock_timeout(&gesture_wakelock, msecs_to_jiffies(5000));
 #else
 		PM_WAKEUP_EVENT(gesture_wakelock, 5000);
+#endif
 #endif
 #else
 		input_report_key(ts->input_dev, keycode, 1);
@@ -2222,13 +2224,10 @@ out:
 	return ret;
 }
 
-#ifdef NVT_SENSOR_EN
+#if defined(NVT_SENSOR_EN) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
 static int nvt_sensor_set_enable(struct sensors_classdev *sensors_cdev,
 		unsigned int enable)
 {
-#ifdef NVT_WAKEUP_GESTURE_CTRL
-	NVT_LOG("wakeup gesture ctrl, do nothing");
-#else
 	NVT_LOG("Gesture set enable %d!", enable);
 	if (enable == 1) {
 		ts->should_enable_gesture = true;
@@ -2237,7 +2236,6 @@ static int nvt_sensor_set_enable(struct sensors_classdev *sensors_cdev,
 	} else {
 		NVT_LOG("unknown enable symbol\n");
 	}
-#endif
 	return 0;
 }
 
@@ -2262,11 +2260,6 @@ static int nvt_sensor_init(struct nvt_ts_data *data)
 	}
 	data->sensor_pdata = sensor_pdata;
 
-#ifdef CONFIG_BOARD_USES_DOUBLE_TAP_CTRL
-        __set_bit(EV_KEY, sensor_input_dev->evbit);
-        __set_bit(BTN_TRIGGER_HAPPY3, sensor_input_dev->keybit);
-        __set_bit(BTN_TRIGGER_HAPPY6, sensor_input_dev->keybit);
-#else
 	if (data->report_gesture_key) {
 		__set_bit(EV_KEY, sensor_input_dev->evbit);
 		__set_bit(KEY_F1, sensor_input_dev->keybit);
@@ -2275,7 +2268,6 @@ static int nvt_sensor_init(struct nvt_ts_data *data)
 		input_set_abs_params(sensor_input_dev, ABS_DISTANCE,
 				0, REPORT_MAX_COUNT, 0, 0);
 	}
-#endif
 	__set_bit(EV_SYN, sensor_input_dev->evbit);
 
 	sensor_input_dev->name = "double-tap";
@@ -3006,7 +2998,7 @@ static int32_t nvt_ts_probe(struct spi_device *client)
 #if ((TOUCH_KEY_NUM > 0) || WAKEUP_GESTURE)
 	int32_t retry = 0;
 #endif
-#ifdef NVT_SENSOR_EN
+#if defined(NVT_SENSOR_EN) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
 	static bool initialized_sensor;
 #endif
 #ifndef CONFIG_INPUT_TOUCHSCREEN_MMI
@@ -3245,7 +3237,7 @@ static int32_t nvt_ts_probe(struct spi_device *client)
 #if WAKEUP_GESTURE
 	device_init_wakeup(&ts->input_dev->dev, 1);
 #endif
-#ifdef NVT_SENSOR_EN
+#if defined(NVT_SENSOR_EN) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
 	if (!initialized_sensor) {
 #ifdef CONFIG_HAS_WAKELOCK
 		wake_lock_init(&gesture_wakelock, WAKE_LOCK_SUSPEND, "dt-wake-lock");
@@ -3543,7 +3535,7 @@ err_register_charger_notify_failed:
 err_charger_detection_alloc_failed:
 err_charger_notify_wq_failed:
 	free_irq(client->irq, ts);
-#ifdef NVT_SENSOR_EN
+#if defined(NVT_SENSOR_EN) && !defined(CONFIG_BOARD_USES_DOUBLE_TAP_CTRL)
 #ifndef CONFIG_HAS_WAKELOCK
 err_wakeup_source_register_failed:
 #endif
