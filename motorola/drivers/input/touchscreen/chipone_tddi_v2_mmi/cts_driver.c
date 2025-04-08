@@ -524,7 +524,6 @@ static int chipone_sensor_set_enable(struct sensors_classdev *sensors_cdev,
                 unsigned int enable)
 {
         cts_info("Gesture set enable %d!", enable);
-        mutex_lock(&g_cts_data->state_mutex);
         if (enable == 1) {
                 cts_enable_gesture_wakeup(&g_cts_data->cts_dev);
                 g_cts_data->should_enable_gesture = true;
@@ -534,7 +533,6 @@ static int chipone_sensor_set_enable(struct sensors_classdev *sensors_cdev,
         } else {
                 cts_info("unknown enable symbol\n");
         }
-        mutex_unlock(&g_cts_data->state_mutex);
         return 0;
 }
 static int chipone_sensor_init(struct chipone_ts_data *data)
@@ -867,9 +865,6 @@ static int cts_driver_probe(struct spi_device *client)
     INIT_WORK(&cts_data->ts_resume_work, cts_resume_work_func);
 
 #ifdef CHIPONE_SENSOR_EN
-        mutex_init(&cts_data->state_mutex);
-        //unknown screen state
-        cts_data->screen_state = SCREEN_UNKNOWN;
         if (!initialized_sensor) {
 #ifdef CONFIG_HAS_WAKELOCK
                 wake_lock_init(&(cts_data->gesture_wakelock), WAKE_LOCK_SUSPEND, "dt-wake-lock");
