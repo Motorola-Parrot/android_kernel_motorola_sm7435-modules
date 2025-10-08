@@ -123,9 +123,7 @@
 #define DRV_SEN_SELFCODE_REG_MAR			0x137D0
 #define DIFF_CODE_DATA_REG_MAR				0x1383E
 
-
 #define ABS(val)			((val < 0)? -(val) : val)
-#define MAX(a, b)			((a > b)? a : b)
 
 enum GTP_TEST_ITEMS {
 	GTP_CAP_TEST = 0,
