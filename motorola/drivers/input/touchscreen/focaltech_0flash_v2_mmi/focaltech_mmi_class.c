@@ -284,7 +284,9 @@ static int fts_mmi_charger_mode(struct device *dev, int mode)
 static int fts_mmi_panel_state(struct device *dev,
 	enum ts_mmi_pm_mode from, enum ts_mmi_pm_mode to)
 {
+#if defined(CONFIG_FTS_DOUBLE_TAP_CONTROL) || defined(FTS_SET_TOUCH_STATE)
 	struct fts_ts_data *ts_data = fts_data;
+#endif
 
 #if defined(CONFIG_FTS_DOUBLE_TAP_CONTROL)
 	unsigned char gesture_type = 0;
