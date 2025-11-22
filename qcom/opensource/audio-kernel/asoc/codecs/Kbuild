@@ -225,6 +225,9 @@ INCS +=		$(COMMON_INC) \
 
 EXTRA_CFLAGS += $(INCS)
 
+ifneq (,$(filter kobe%, $(TARGET_PRODUCT)))
+       EXTRA_CFLAGS += -DFCNT_GREEN_RUST
+endif
 
 CDEFINES +=	-DANI_LITTLE_BYTE_ENDIAN \
 		-DANI_LITTLE_BIT_ENDIAN \
@@ -259,6 +262,9 @@ ifeq ($(KERNEL_BUILD), 1)
 	obj-y	+= lpass-cdc/
 	obj-y	+= wsa883x/
 	obj-y	+= rouleur/
+	obj-y   += aw882xx/
+	obj-y   += aw87xxx/
+	obj-y   += fs19xx/
 endif
 # Module information used by KBuild framework
 obj-$(CONFIG_WCD9XXX_CODEC_CORE) += wcd_core_dlkm.o

@@ -614,7 +614,7 @@ void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 
 		mbhc->hph_type = WCD_MBHC_HPH_NONE;
 		mbhc->zl = mbhc->zr = 0;
-		pr_debug("%s: Reporting removal %d(%x)\n", __func__,
+		pr_info("%s: Reporting removal %d(%x)\n", __func__,
 			 jack_type, mbhc->hph_status);
 		wcd_mbhc_jack_report(mbhc, &mbhc->headset_jack,
 				mbhc->hph_status, WCD_MBHC_JACK_MASK);
@@ -657,7 +657,7 @@ void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 			mbhc->hph_type = WCD_MBHC_HPH_NONE;
 			mbhc->zl = mbhc->zr = 0;
 			if (!mbhc->force_linein) {
-				pr_debug("%s: Reporting removal (%x)\n",
+				pr_info("%s: Reporting removal (%x)\n",
 					 __func__, mbhc->hph_status);
 				wcd_mbhc_jack_report(mbhc, &mbhc->headset_jack,
 					0, WCD_MBHC_JACK_MASK);
@@ -731,8 +731,12 @@ void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 					&mbhc->zl, &mbhc->zr);
 			WCD_MBHC_REG_UPDATE_BITS(WCD_MBHC_FSM_EN,
 						 fsm_en);
-			if ((mbhc->zl > mbhc->mbhc_cfg->linein_th) &&
-				(mbhc->zr > mbhc->mbhc_cfg->linein_th) &&
+			pr_info("%s,compute impedance,zl = %d,zr = %d\n",
+                                    __func__, mbhc->zl, mbhc->zr);
+			if ((((mbhc->zl > mbhc->mbhc_cfg->linein_th) &&
+				(mbhc->zr > mbhc->mbhc_cfg->linein_th)) ||
+				(mbhc->zl == 0) ||
+				(mbhc->zr == 0)) &&
 				(jack_type == SND_JACK_HEADPHONE)) {
 				jack_type = SND_JACK_LINEOUT;
 				mbhc->force_linein = true;
@@ -751,7 +755,7 @@ void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 							mbhc->hph_status,
 							WCD_MBHC_JACK_MASK);
 				}
-				pr_debug("%s: Marking jack type as SND_JACK_LINEOUT\n",
+				pr_info("%s: Marking jack type as SND_JACK_LINEOUT\n",
 				__func__);
 			}
 		}
@@ -786,7 +790,7 @@ void wcd_mbhc_report_plug(struct wcd_mbhc *mbhc, int insertion,
 		    mbhc->mbhc_cb->mbhc_micb_ramp_control)
 			mbhc->mbhc_cb->mbhc_micb_ramp_control(component, false);
 
-		pr_debug("%s: Reporting insertion %d(%x)\n", __func__,
+		pr_info("%s: Reporting insertion %d(%x)\n", __func__,
 			 jack_type, mbhc->hph_status);
 		wcd_mbhc_jack_report(mbhc, &mbhc->headset_jack,
 				    (mbhc->hph_status | SND_JACK_MECHANICAL),
@@ -809,7 +813,7 @@ void wcd_mbhc_elec_hs_report_unplug(struct wcd_mbhc *mbhc)
 	else
 		pr_info("%s: hs_detect_plug work not cancelled\n", __func__);
 
-	pr_debug("%s: Report extension cable\n", __func__);
+	pr_info("%s: Report extension cable\n", __func__);
 
 	/*
 	 * If PA is enabled HPHL schmitt trigger can
@@ -1130,12 +1134,47 @@ done:
 	pr_debug("%s: leave\n", __func__);
 }
 
+#ifdef FCNT_GREEN_RUST
+static int EAR_DET_EN = 0; //gpio108
+static int EAR_DET_IN = 0; //gpio95
+static long irq_count = 0;
+static long ear_en_value = 0;
+static long ear_in_value = 0;
+#define IRQ_MAX 99999
+
+int green_rust_gpio_get(struct snd_kcontrol * kcontrol, struct snd_ctl_elem_value * ucontrol)
+{
+	ucontrol->value.integer.value[0] = ear_in_value;
+	ucontrol->value.integer.value[1] = ear_en_value;
+	ucontrol->value.integer.value[2] = irq_count;
+	pr_debug("func:%s ear_in_value:%ld ear_en_value:%ld irq_count:%ld\n",
+		__func__, ear_in_value, ear_en_value, irq_count);
+	return 0;
+}
+
+int green_rust_gpio_put(struct snd_kcontrol * kcontrol, struct snd_ctl_elem_value * ucontrol)
+{
+	ear_in_value = ucontrol->value.integer.value[0];
+	ear_en_value = ucontrol->value.integer.value[1];
+
+	gpio_set_value(EAR_DET_IN, !!ear_in_value);
+	gpio_set_value(EAR_DET_EN, !!ear_en_value);
+
+	pr_debug("func:%s EAR_DET_IN_value:%d EAR_DET_EN_value:%d\n",
+		__func__, !!ear_in_value, !!ear_en_value);
+	return 0;
+}
+
+static struct snd_kcontrol_new green_rust_gpio = (struct snd_kcontrol_new) \
+		SOC_SINGLE_MULTI_EXT("green_rust_gpio", 0, 0, IRQ_MAX, 0, 3, green_rust_gpio_get, green_rust_gpio_put);
+#endif
+
 static irqreturn_t wcd_mbhc_mech_plug_detect_irq(int irq, void *data)
 {
 	int r = IRQ_HANDLED;
 	struct wcd_mbhc *mbhc = data;
 
-	pr_debug("%s: enter\n", __func__);
+	pr_info("%s: enter\n", __func__);
 	if (mbhc == NULL) {
 		pr_err("%s: NULL irq data\n", __func__);
 		return IRQ_NONE;
@@ -1144,6 +1183,11 @@ static irqreturn_t wcd_mbhc_mech_plug_detect_irq(int irq, void *data)
 		pr_warn("%s: failed to hold suspend\n", __func__);
 		r = IRQ_NONE;
 	} else {
+#ifdef FCNT_GREEN_RUST
+		irq_count++;
+		if(irq_count > IRQ_MAX)
+			irq_count = 0;
+#endif
 		/* Call handler */
 		wcd_mbhc_swch_irq_handler(mbhc);
 		mbhc->mbhc_cb->lock_sleep(mbhc, false);
@@ -1318,7 +1362,7 @@ static irqreturn_t wcd_mbhc_release_handler(int irq, void *data)
 	if (mbhc->buttons_pressed & WCD_MBHC_JACK_BUTTON_MASK) {
 		ret = wcd_cancel_btn_work(mbhc);
 		if (ret == 0) {
-			pr_debug("%s: Reporting long button release event\n",
+			pr_info("%s: Reporting long button release event\n",
 				 __func__);
 			wcd_mbhc_jack_report(mbhc, &mbhc->button_jack,
 					0, mbhc->buttons_pressed);
@@ -1327,7 +1371,7 @@ static irqreturn_t wcd_mbhc_release_handler(int irq, void *data)
 				pr_debug("%s: Switch irq kicked in, ignore\n",
 					__func__);
 			} else {
-				pr_debug("%s: Reporting btn press\n",
+				pr_info("%s: Reporting btn press\n",
 					 __func__);
 				wcd_mbhc_jack_report(mbhc,
 						     &mbhc->button_jack,
@@ -1864,6 +1908,31 @@ int wcd_mbhc_init(struct wcd_mbhc *mbhc, struct snd_soc_component *component,
 		mbhc->moist_iref = hph_moist_config[1];
 		mbhc->moist_rref = hph_moist_config[2];
 	}
+
+#ifdef FCNT_GREEN_RUST
+	EAR_DET_EN = of_get_named_gpio(card->dev->of_node,"ear_det_en-gpios",0);
+	if (!gpio_is_valid(EAR_DET_EN)) {
+		dev_err(card->dev, "EAR_DET_EN is invalid\n");
+		goto green_exit;
+	}
+	gpio_request(EAR_DET_EN, "EAR_DET_EN");
+	gpio_direction_output(EAR_DET_EN, 1);
+	gpio_set_value(EAR_DET_EN, 0);
+	ear_en_value = 0;
+
+	EAR_DET_IN = of_get_named_gpio(card->dev->of_node,"ear_det_in-gpios",0);
+	if (!gpio_is_valid(EAR_DET_IN)) {
+		dev_err(card->dev, "EAR_DET_IN is invalid\n");
+		goto green_exit;
+	}
+	gpio_request(EAR_DET_IN, "EAR_DET_IN");
+	gpio_direction_output(EAR_DET_IN, 1);
+	gpio_set_value(EAR_DET_IN, 1);
+	ear_in_value = 1;
+
+	snd_soc_add_component_controls(component, &green_rust_gpio, 1);
+green_exit:
+#endif
 
 	mbhc->in_swch_irq_handler = false;
 	mbhc->current_plug = MBHC_PLUG_TYPE_NONE;
