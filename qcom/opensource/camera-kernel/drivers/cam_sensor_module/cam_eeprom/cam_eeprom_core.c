@@ -1300,6 +1300,7 @@ static int32_t cam_eeprom_pkt_parse(struct cam_eeprom_ctrl_t *e_ctrl, void *arg)
 	rc = cam_packet_util_copy_pkt_to_kmd(csl_packet_u, &csl_packet, remain_len);
 	if (rc) {
 		CAM_ERR(CAM_EEPROM, "Copying packet to KMD failed");
+                cam_mem_put_cpu_buf(dev_config.packet_handle);
 		goto put_ref;
 	}
 
@@ -1310,6 +1311,7 @@ static int32_t cam_eeprom_pkt_parse(struct cam_eeprom_ctrl_t *e_ctrl, void *arg)
 					e_ctrl->soc_info.dev->of_node, e_ctrl);
 			if (rc < 0) {
 				CAM_ERR(CAM_EEPROM, "Failed: rc : %d", rc);
+                                cam_mem_put_cpu_buf(dev_config.packet_handle);
 				goto end;
 			}
 			rc = cam_eeprom_get_cal_data(e_ctrl, csl_packet);
@@ -1325,6 +1327,7 @@ static int32_t cam_eeprom_pkt_parse(struct cam_eeprom_ctrl_t *e_ctrl, void *arg)
 		if (rc) {
 			CAM_ERR(CAM_EEPROM,
 				"Failed in parsing the pkt");
+                        cam_mem_put_cpu_buf(dev_config.packet_handle);
 			goto end;
 		}
 
@@ -1383,6 +1386,7 @@ static int32_t cam_eeprom_pkt_parse(struct cam_eeprom_ctrl_t *e_ctrl, void *arg)
 			csl_packet, e_ctrl);
 		if (rc < 0) {
 			CAM_ERR(CAM_EEPROM, "Failed: rc : %d", rc);
+                        cam_mem_put_cpu_buf(dev_config.packet_handle);
 			goto end;
 		}
 
@@ -1404,6 +1408,7 @@ static int32_t cam_eeprom_pkt_parse(struct cam_eeprom_ctrl_t *e_ctrl, void *arg)
 			e_ctrl->eebin_info.size);
 		if (rc < 0) {
 			CAM_ERR(CAM_EEPROM, "Failed in erase : %d", rc);
+                        cam_mem_put_cpu_buf(dev_config.packet_handle);
 			goto memdata_free;
 		}
 
@@ -1413,6 +1418,7 @@ static int32_t cam_eeprom_pkt_parse(struct cam_eeprom_ctrl_t *e_ctrl, void *arg)
 		rc = cam_eeprom_write(e_ctrl);
 		if (rc < 0) {
 			CAM_ERR(CAM_EEPROM, "Failed: rc : %d", rc);
+                        cam_mem_put_cpu_buf(dev_config.packet_handle);
 			goto memdata_free;
 		}
 

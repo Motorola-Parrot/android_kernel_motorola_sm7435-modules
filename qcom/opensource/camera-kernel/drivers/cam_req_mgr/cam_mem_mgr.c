@@ -273,7 +273,6 @@ static void cam_mem_put_slot(int32_t idx)
 	mutex_lock(&tbl.bufq[idx].q_lock);
 	_SPIN_LOCK_PROCESS_TO_BH(&tbl.bufq[idx].idx_lock);
 	tbl.bufq[idx].active = false;
-	_SPIN_UNLOCK_PROCESS_TO_BH(&tbl.bufq[idx].idx_lock);
 	tbl.bufq[idx].release_deferred = false;
 	tbl.bufq[idx].is_internal = false;
 	memset(&tbl.bufq[idx].timestamp, 0, sizeof(struct timespec64));
@@ -1494,13 +1493,6 @@ void cam_mem_put_cpu_buf(int32_t buf_handle)
 	bool unmap = false;
 	uint64_t ms, hrs, min, sec;
 	struct timespec64 current_ts;
-
-	/* Check to avoid kernel panic - cannot call mutex in softirq/atomic context */
-	if (!in_task()) {
-		CAM_ERR(CAM_MEM, "Calling from softirq/atomic context");
-		dump_stack();
-		return;
-	}
 
 	if (!buf_handle) {
 		CAM_ERR(CAM_MEM, "Invalid buf_handle");
