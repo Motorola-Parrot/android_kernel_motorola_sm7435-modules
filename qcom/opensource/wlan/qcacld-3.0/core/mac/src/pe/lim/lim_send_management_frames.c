@@ -2431,6 +2431,9 @@ lim_send_assoc_req_mgmt_frame(struct mac_context *mac_ctx,
 	populate_dot11f_bss_max_idle(mac_ctx, pe_session,
 				     &frm->bss_max_idle_period);
 
+	if (IS_DOT11_MODE_HE(pe_session->dot11mode))
+		lim_update_session_he_capable(mac_ctx, pe_session);
+
 	if (lim_is_session_he_capable(pe_session)) {
 		pe_debug("Populate HE IEs");
 		populate_dot11f_he_caps(mac_ctx, pe_session,
@@ -5218,6 +5221,7 @@ lim_send_radio_measure_report_action_frame(struct mac_context *mac,
 				struct pe_session *pe_session)
 {
 	QDF_STATUS status_code = QDF_STATUS_SUCCESS;
+	tDot11fRadioMeasurementReport *frm;
 	uint8_t *pFrame;
 	tpSirMacMgmtHdr pMacHdr;
 	uint32_t nBytes, nPayload, nStatus;
@@ -5228,12 +5232,7 @@ lim_send_radio_measure_report_action_frame(struct mac_context *mac,
 	uint8_t smeSessionId = 0;
 	bool is_last_report = false;
 
-	/* Malloc size of (tDot11fIEMeasurementReport) * (num_report - 1)
-	 * as memory for one Dot11fIEMeasurementReport is already calculated.
-	 */
-	tDot11fRadioMeasurementReport *frm =
-		qdf_mem_malloc(sizeof(tDot11fRadioMeasurementReport) +
-		(sizeof(tDot11fIEMeasurementReport) * (num_report - 1)));
+	frm = qdf_mem_malloc(sizeof(tDot11fRadioMeasurementReport));
 	if (!frm)
 		return QDF_STATUS_E_NOMEM;
 
