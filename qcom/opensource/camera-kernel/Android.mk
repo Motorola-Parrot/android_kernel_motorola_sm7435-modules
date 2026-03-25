@@ -1,3 +1,4 @@
+ifneq ($(BOARD_USES_LEGACY_CAMERA), true)
 CAMERA_DLKM_ENABLED := true
 ifeq ($(TARGET_KERNEL_DLKM_DISABLE), true)
 	ifeq ($(TARGET_KERNEL_DLKM_CAMERA_OVERRIDE), false)
@@ -33,6 +34,7 @@ include $(CLEAR_VARS)
 $(warning camera-kernel: Enabling Pre-Sil build, exporting symbols!)
 LOCAL_SRC_FILES           := $(CAMERA_SRC_FILES)
 LOCAL_MODULE              := camera-kernel-symvers
+LOCAL_MULTILIB := first
 LOCAL_MODULE_STEM         := Module.symvers
 LOCAL_MODULE_KBUILD_NAME  := Module.symvers
 LOCAL_MODULE_PATH         := $(KERNEL_MODULES_OUT)
@@ -54,6 +56,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES             := $(CAMERA_SRC_FILES)
 LOCAL_MODULE_PATH           := $(KERNEL_MODULES_OUT)
 LOCAL_MODULE                := camera.ko
+LOCAL_MULTILIB := first
 LOCAL_MODULE_TAGS           := optional
 #LOCAL_MODULE_KBUILD_NAME   := camera.ko
 #LOCAL_MODULE_DEBUG_ENABLE  := true
@@ -81,3 +84,4 @@ endif
 
 endif # End of check for board platform
 endif # ifeq ($(CAMERA_DLKM_ENABLED),true)
+endif # BOARD_USES_LEGACY_CAMERA
