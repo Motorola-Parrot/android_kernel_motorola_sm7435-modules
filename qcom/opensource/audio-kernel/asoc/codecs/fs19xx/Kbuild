@@ -105,3 +105,4 @@ fs19xx_dlkm-y := $(FSM19XX_OBJS)
 
 # inject some build related information
 DEFINES += -DBUILD_TIMESTAMP=\"$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')\"
+
