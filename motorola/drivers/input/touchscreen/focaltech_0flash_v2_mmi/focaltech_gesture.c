@@ -289,10 +289,8 @@ static int fts_create_gesture_sysfs(struct device *dev)
 static void fts_gesture_report(struct input_dev *input_dev, int gesture_id)
 {
     int gesture;
-#ifdef CONFIG_INPUT_TOUCHSCREEN_MMI
+#if defined(FOCALTECH_SENSOR_EN) || defined(CONFIG_INPUT_TOUCHSCREEN_MMI)
     int ret = 0;
-#endif
-#ifdef FOCALTECH_SENSOR_EN
     static int report_cnt = 0;
 #endif
 
@@ -388,6 +386,7 @@ static void fts_gesture_report(struct input_dev *input_dev, int gesture_id)
                 event.evcode = 4;
                 /* call class method */
                 ret = fts_data->imports->report_gesture(&event);
+                ++report_cnt;
         }
 	    /* report single tap */
         } else if (gesture == KEY_GESTURE_U) {
@@ -398,6 +397,7 @@ static void fts_gesture_report(struct input_dev *input_dev, int gesture_id)
                 event.evcode = 1;
                 /* call class method */
                 ret = fts_data->imports->report_gesture(&event);
+                ++report_cnt;
             }
         }
 #endif
